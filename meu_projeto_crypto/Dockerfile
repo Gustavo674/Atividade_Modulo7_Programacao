@@ -13,5 +13,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copie o restante do código da aplicação para o diretório de trabalho
 COPY . .
 
-# Defina o comando padrão para executar a aplicação
-CMD ["python", "./src/api/collect_data.py"]
+# Defina o comando padrão para executar a aplicação (ajuste conforme o script principal)
+CMD ["python", "./src/api/models/compare_models.py"]
