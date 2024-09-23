@@ -1,0 +1,23 @@
+# src/api/dashboard.py
+import streamlit as st
+import requests
+
+# Configuração do Dashboard
+st.title("Dashboard de Previsão de Criptoativos")
+
+# Entradas do usuário
+sma_20 = st.number_input("SMA 20 Dias", value=0.0)
+rsi = st.number_input("RSI", value=0.0)
+volume = st.number_input("Volume", value=0.0)
+
+# Botão para enviar os dados e receber a previsão
+if st.button("Prever"):
+    # Ajuste os nomes das chaves para corresponder aos nomes usados no treinamento
+    data = {"SMA_20": sma_20, "RSI": rsi, "Volume": volume}
+    response = requests.post("http://localhost:8000/predict/", json=[data])
+
+    if response.status_code == 200:
+        prediction = response.json()["predictions"]
+        st.success(f"Previsão: {prediction}")
+    else:
+        st.error(f"Erro na previsão: {response.json()['detail']}")

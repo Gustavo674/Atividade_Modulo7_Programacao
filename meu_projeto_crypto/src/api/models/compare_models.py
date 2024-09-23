@@ -1,10 +1,10 @@
-# compare_models.py
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from prophet import Prophet
 from sklearn.model_selection import train_test_split
+import joblib
 
 # Função para calcular RMSE e MAE para um conjunto de previsões
 def evaluate_model(y_true, y_pred, model_name):
@@ -42,13 +42,18 @@ def run_random_forest(data, target_col):
     # Calcular SMA_20 e RSI
     data['SMA_20'] = data['Close'].rolling(window=20).mean()
     data['RSI'] = calculate_rsi(data)
-    data = data.dropna()  # Remover linhas com NaN resultantes dos cálculos
+    data = data.dropna()  
     features = data[['SMA_20', 'RSI', 'Volume']]
     target = data[target_col]
     X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=42)
     model = RandomForestRegressor(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
+    
+    # Salvar o modelo treinado
+    joblib.dump(model, 'modelos/best_random_forest_model.pkl')
+    print("Modelo Random Forest salvo com sucesso em 'modelos/best_random_forest_model.pkl'")
+    
     return y_test, y_pred
 
 # Função para executar Prophet
