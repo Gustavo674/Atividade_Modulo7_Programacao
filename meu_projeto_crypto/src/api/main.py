@@ -6,15 +6,17 @@ import joblib
 
 # Definir um modelo de entrada para a API usando Pydantic com nomes de campos correspondentes
 class PredictionInput(BaseModel):
-    SMA_20: float  # Corrigir os nomes para exatamente como são enviados
+    SMA_20: float
     RSI: float
     Volume: float
+    asset: str  # Campo adicional para especificar o ativo: 'BTC' ou 'ETH'
 
 # Inicializar a aplicação FastAPI
 app = FastAPI()
 
-# Carregar o modelo previamente treinado (exemplo: Random Forest)
-model = joblib.load('src/api/models/modelos/best_random_forest_model.pkl')
+# Carregar os modelos previamente treinados para Bitcoin e Ethereum
+model_btc = joblib.load('src/api/models/modelos/best_random_forest_model_btc.pkl')
+model_eth = joblib.load('src/api/models/modelos/best_random_forest_model_eth.pkl')
 
 # Rota para verificar o status da API
 @app.get("/")
@@ -27,6 +29,17 @@ async def predict(data: List[PredictionInput]):
     try:
         # Converter os dados recebidos para um DataFrame
         input_df = pd.DataFrame([d.dict() for d in data])
+
+        # Selecionar o modelo com base no ativo especificado
+        if input_df['asset'][0].upper() == 'BTC':
+            model = model_btc
+        elif input_df['asset'][0].upper() == 'ETH':
+            model = model_eth
+        else:
+            raise ValueError("Ativo não suportado. Use 'BTC' para Bitcoin ou 'ETH' para Ethereum.")
+
+        # Remover a coluna 'asset' antes de fazer a previsão
+        input_df = input_df.drop(columns=['asset'])
 
         # Realizar a previsão
         predictions = model.predict(input_df)
