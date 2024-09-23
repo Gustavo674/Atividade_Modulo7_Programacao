@@ -44,8 +44,17 @@ async def predict(data: List[PredictionInput]):
         # Realizar a previsão
         predictions = model.predict(input_df)
 
-        # Retornar as previsões
-        return {"predictions": predictions.tolist()}
+        # Lógica de decisão de compra/venda
+        current_price = input_df['SMA_20'][0]  # Usando SMA_20 como proxy para o preço atual
+        predicted_price = predictions[0]
+
+        if predicted_price > current_price:
+            action = "Compra"
+        else:
+            action = "Venda"
+
+        # Retornar as previsões e a ação recomendada
+        return {"predictions": predictions.tolist(), "action": action}
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

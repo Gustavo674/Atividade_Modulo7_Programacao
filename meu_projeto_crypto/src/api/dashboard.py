@@ -20,7 +20,9 @@ if st.button("Prever"):
     response = requests.post("http://localhost:8000/predict/", json=[data])
 
     if response.status_code == 200:
-        prediction = response.json()["predictions"]
-        st.success(f"Previsão para {asset}: {prediction}")
+        result = response.json()
+        prediction = result["predictions"]
+        action = result.get("action", "Indefinido")  # Capturar ação recomendada
+        st.success(f"Previsão para {asset}: {prediction} | Ação Sugerida: {action}")
     else:
         st.error(f"Erro na previsão: {response.json()['detail']}")
