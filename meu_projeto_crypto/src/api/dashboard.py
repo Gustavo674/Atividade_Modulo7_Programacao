@@ -17,7 +17,7 @@ volume = st.number_input("Volume", value=0.0)
 if st.button("Prever"):
     # Ajuste os nomes das chaves para corresponder aos nomes usados no treinamento
     data = {"SMA_20": sma_20, "RSI": rsi, "Volume": volume, "asset": asset}
-    response = requests.post("http://localhost:8000/predict/", json=[data])
+    response = requests.post("http://api:5000/predict/", json=[data])
 
     if response.status_code == 200:
         result = response.json()

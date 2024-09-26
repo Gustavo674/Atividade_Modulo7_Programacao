@@ -1,43 +1,39 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:13
-    container_name: crypto_db
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: crypto_data
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-  app:
+  schedule:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: crypto_app
+      dockerfile: src/api/Dockerfile.schedule
     depends_on:
       - db
-    environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/crypto_data
+
+  api:
+    build:
+      context: .
+      dockerfile: src/api/Dockerfile.api
     ports:
-      - "8000:8000"
-    volumes:
-      - .:/app
-    command: ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+      - "5000:5000"  
+    depends_on:
+      - db
 
   dashboard:
-    image: python:3.10-slim
-    container_name: crypto_dashboard
-    volumes:
-      - .:/app
-    working_dir: /app
+    build:
+      context: .
+      dockerfile: src/api/Dockerfile.dashboard
     ports:
       - "8501:8501"
-    command: ["streamlit", "run", "src/api/dashboard.py"]
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14
+    environment:
+      - POSTGRES_USER=seu_usuario
+      - POSTGRES_PASSWORD=sua_senha
+      - POSTGRES_DB=seu_banco
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
 
 volumes:
-  pgdata:
-    driver: local
+  postgres_data:

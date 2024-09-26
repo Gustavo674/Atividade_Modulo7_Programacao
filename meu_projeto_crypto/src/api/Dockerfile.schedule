@@ -1,0 +1,18 @@
+# Usar a imagem base do Python
+FROM python:3.10-slim
+
+# Definir o diretório de trabalho
+WORKDIR /app
+
+# Copiar o requirements.txt para o contêiner
+COPY requirements.txt /app/requirements.txt
+
+# Instalar as dependências
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+# Copiar o código-fonte do serviço schedule e suas dependências
+COPY src/api/schedule_data_collection.py /app/
+COPY src/api/collect_data.py /app/
+
+# Comando para executar o serviço
+CMD ["python", "schedule_data_collection.py"]

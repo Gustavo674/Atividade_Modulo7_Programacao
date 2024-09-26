@@ -16,7 +16,7 @@ app = FastAPI()
 
 # Carregar o modelo re-treinado para Bitcoin e Ethereum
 # Como o modelo re-treinado é único, ele é usado para ambos os ativos
-model_retrained = joblib.load('src/api/models/modelos/best_random_forest_model_retrained.pkl')
+model_retrained = joblib.load('models/modelos/best_random_forest_model_retrained.pkl')
 
 # Rota para verificar o status da API
 @app.get("/")
